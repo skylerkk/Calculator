@@ -1,3 +1,4 @@
+
 // let body = document.getElementById('body');
 // body.setAttribute('class', 'container border mt-5 pt-3')
 // function generateElement(type, id, classlist, parent, text = false) {
@@ -41,25 +42,44 @@ class Calculator {
     }
     display() {
         let body = document.getElementById('body');
-        body.setAttribute('class', 'container border mt-5 pt-3');
+        body.setAttribute('class', 'container border mt-5');
         let row = document.createElement('div');
         row.setAttribute('class', 'row');
         let display = document.createElement('div');
         display.setAttribute('class', 'col-12 text-right border py-5');
+        row.appendChild(display);
         for (let i = 0; i < this.iconArray.length; i++) {
             let btn = new Button(this.iconArray[i]);
-
-            row.appendChild(btn);
+            btn.addButton();
+            row.appendChild(btn.column);
         }
+        body.appendChild(row);
     }
 }
 
 class Button {
     constructor(type) {
-        this.type = type
+        this.type = type;
+        this.column = null;
     }
-    addEvent() {
+    addButton() {
+        let col = document.createElement('div');
+        if(this.type !== '0'){
+            col.setAttribute('class', 'col-3 text-center border py-3');
+        }
+        else{
+            col.setAttribute('class', 'col-6 text-center border py-3');
+        }
+        col.setAttribute('id', this.type);
+        let para = document.createElement('p');
+        para.innerHTML = this.type;
+        col.appendChild(para);
+        col.addEventListener('click', this.end);
+        this.column = col;
+    }
 
+    end(){
+        console.log(`press ${this.type}`);
     }
 }
 
