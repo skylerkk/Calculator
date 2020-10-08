@@ -1,97 +1,171 @@
-
-// let body = document.getElementById('body');
-// body.setAttribute('class', 'container border mt-5 pt-3')
-// function generateElement(type, id, classlist, parent, text = false) {
-
-//     let newElement = document.createElement(type);
-//     newElement.id = id;
-//     let para = document.createTextNode(text);
-//     if (text !== false) {
-//         newElement.appendChild(para);
-//     }
-//     newElement.setAttribute('class', classlist);
-//     parent.append(newElement);
-//     return newElement;
-// }
-
-// let displayRow = generateElement('div', 'row', 'row', body);
-// generateElement('div', 'display', 'col-12 py-4', row)
-// generateElement('div', 'clear', 'col-3 text-center py-4 border', row, 'AC');
-// generateElement('div', '+/-', 'col-3 text-center py-4 border', row, '+/-');
-// generateElement('div', '%', 'col-3 text-center py-4 border', row, '%');
-// generateElement('div', '/', 'col-3 text-center py-4 border', row, '/');
-// generateElement('div', '7', 'col-3 text-center py-4 border', row, '7');
-// generateElement('div', '8', 'col-3 text-center py-4 border', row, '8');
-// generateElement('div', '9', 'col-3 text-center py-4 border', row, '9');
-// generateElement('div', 'x', 'col-3 text-center py-4 border', row, 'x');
-// generateElement('div', '4', 'col-3 text-center py-4 border', row, '4');
-// generateElement('div', '5', 'col-3 text-center py-4 border', row, '5');
-// generateElement('div', '6', 'col-3 text-center py-4 border', row, '6');
-// generateElement('div', '-', 'col-3 text-center py-4 border', row, '-');
-// generateElement('div', '1', 'col-3 text-center py-4 border', row, '1');
-// generateElement('div', '2', 'col-3 text-center py-4 border', row, '2');
-// generateElement('div', '3', 'col-3 text-center py-4 border', row, '3');
-// generateElement('div', '+', 'col-3 text-center py-4 border', row, '+');
-// generateElement('div', '0', 'col-6 text-center py-4 border', row, '0');
-// generateElement('div', '.', 'col-3 text-center py-4 border', row, '.');
-// generateElement('div', '=', 'col-3 text-center py-4 border', row, '=');
-
+//Calculator Class
 class Calculator {
+
+    /*
+        constructor holds calcIcons, numIcons, opIcons and uses that to set the buttons
+        sets calcButtons equal to empty array to push all the objects taht get created by the buttons
+        make display text, lastnumber, lastoperator, and current number to use later
+    */
     constructor() {
         this.calcIcons = ['AC', '+/-', '%', '/', '7', '8', '9', 'x', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='];
+        this.numIconArr = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'];
+        this.opIconArr = ['+', '-', '=', '/', '%', '+/-', 'x', 'AC'];
+        this.calcButtons = [];
+        this.displayText = null;
+        this.lastNumber = '';
+        this.currentNumber = '0';
+        this.lastOperator = null;
     }
-    display() {
+
+    //init makes the display and button objects
+    init() {
+        //get the body div and set classes to it
         let body = document.getElementById('body');
         body.setAttribute('class', 'container border mt-5');
+
+        //make row element set the class to it
         let row = document.createElement('div');
         row.setAttribute('class', 'row');
+
+        //make a div called display and set its col size to 12 and text to right
+        //make displayText equal to this display and set it to current number then put it on the row
         let display = document.createElement('div');
         display.setAttribute('class', 'col-12 text-right border py-5');
+        this.displayText = display;
+        this.displayText.innerHTML = this.currentNumber;
         row.appendChild(display);
+
+        //loop through each calcIcons
         for (let i = 0; i < this.calcIcons.length; i++) {
-            let btn = new Button(this.calcIcons[i]);
-            row.appendChild(btn.addButton());
+
+            //loop thorugh all numIcons
+            for (let j = 0; j < this.numIconArr.length; j++) {
+                //if the calcIcon is equal to the numIconArr at current index then make a number button of that type 
+                if (this.calcIcons[i] === this.numIconArr[j]) {
+                    let btn = new Number(this.calcIcons[i]);
+                    btn.addButton();
+
+                    //append that to the row and push it to the calcButtons array
+                    row.appendChild(btn.col);
+                    this.calcButtons.push(btn);
+                }
+            }
+
+            //loop through all opIcons
+            for (let j = 0; j < this.opIconArr.length; j++) {
+                //if the calcIcon is equal to the numIconArr at current index then make a operator button of that type 
+                if (this.calcIcons[i] === this.opIconArr[j]) {
+                    let btn = new Operator(this.calcIcons[i]);
+                    btn.addButton();
+
+                    //append that to the row and push it to the calcButtons array
+                    row.appendChild(btn.col);
+                    this.calcButtons.push(btn);
+                }
+            }
         }
+        //append the row to  the body
         body.appendChild(row);
     }
+
+    calledMethod(type) {
+        for (let i = 0; i < this.calcButtons.length; i++) {
+            if (this.calcButtons[i] instanceof Operator) {
+                console.log('hit');
+            }
+            else if (this.calcButtons[i] instanceof Number) {
+                console.log('num');
+            }
+        }
+    }
+
+    addNumber() {
+
+    }
+
+    doOperator() {
+
+    }
+
+    //updates the display with the currentNumber
+    update() {
+        this.displayText.innerHTML = this.currentNumber;
+    }
+
 }
 
-class Button {
+
+//class operator
+class Operator {
+
+    //constructor taht takes in type
     constructor(type) {
         this.type = type;
+        this.col = null;
     }
+
+    //add a button
     addButton() {
+        //make a div that becomes a column clsas and set the id to be this type
         let col = document.createElement('div');
-        if(this.type !== '0'){
-            col.setAttribute('class', 'col-3 text-center border py-3');
-        }
-        else{
-            col.setAttribute('class', 'col-6 text-center border py-3');
-        }
+        col.setAttribute('class', 'col-3 text-center border py-3');
         col.setAttribute('id', this.type);
+        //make a paragraph and set its text to the calculator icon
         let para = document.createElement('p');
         para.innerHTML = this.type;
+
+        //append the paragraph to the column
         col.appendChild(para);
-        col.addEventListener('click', this.checker.bind(this));
-        return col;
-    }
 
-    checker(){
-        console.log(`press ${this.type}`);
-    }
-}
+        //add an eventlistneer that uses calc.calledMethod as its function when it is clicked
+        col.addEventListener('click', function () {
+            calc.calledMethod(this.type);
+        });
 
-class Operator extends Button {
-    constructor(element) {
-        super(element, 'operator');
+        //this.col and col
+        this.col = col;
     }
 }
 
-class Number extends Button {
-    constructor(element) {
-        super(element, 'number');
+class Number {
+
+    //constructor taht takes in type
+    constructor(type) {
+        this.type = type;
+        this.col = null;
+    }
+
+    //add a button 
+    addButton() {
+        //make a div that becomes a column clsas and set the id to be this type
+        let col = document.createElement('div');
+        //if the type is 0 then make it col-6
+        if (this.type === '0') {
+            col.setAttribute('class', 'col-6 text-center border py-3');
+        }
+        //else it is col-3
+        else {
+            col.setAttribute('class', 'col-3 text-center border py-3');
+        }
+        col.setAttribute('id', this.type);
+        
+        //make a paragraph and set its text to the calculator icon
+        let para = document.createElement('p');
+        para.innerHTML = this.type;
+
+        //append the paragraph to the column
+        col.appendChild(para);
+
+        //add an eventlistneer that uses calc.calledMethod as its function when it is clicked
+        col.addEventListener('click', function () {
+            calc.calledMethod(this.type);
+        });
+
+        //this.col and col
+        this.col = col;
     }
 }
 
 var calc = new Calculator();
-calc.display();
+calc.init();
+
