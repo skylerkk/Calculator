@@ -15,7 +15,34 @@ class Calculator {
         this.lastNumber = '';
         this.currentNumber = '0';
         this.lastOperator = null;
+        this.dot = false;
+
+        this.addNum = this.addNum.bind(this);
+        this.operate = this.operate.bind(this);
     }
+
+    addNum(num){
+        if (this.currentNumber === '0' && num !== '.'){
+            this.currentNumber = num;
+            this.update();
+        }
+        else if(num === '.'){
+            if(this.dot === false){
+                this.currentNumber += num;
+                this.update();
+                this.dot = true;
+            }
+        }
+        else if(this.currentNumber.length < 9){
+            this.currentNumber += num;
+            this.update();
+        }
+    }
+
+    operate(num){
+        console.log('hit');
+    }
+
 
     //init makes the display and button objects
     init() {
@@ -42,7 +69,7 @@ class Calculator {
             for (let j = 0; j < this.numIconArr.length; j++) {
                 //if the calcIcon is equal to the numIconArr at current index then make a number button of that type 
                 if (this.calcIcons[i] === this.numIconArr[j]) {
-                    let btn = new Number(this.calcIcons[i]);
+                    let btn = new Number(this.calcIcons[i], this.addNum);
                     btn.addButton();
 
                     //append that to the row and push it to the calcButtons array
@@ -55,7 +82,7 @@ class Calculator {
             for (let j = 0; j < this.opIconArr.length; j++) {
                 //if the calcIcon is equal to the numIconArr at current index then make a operator button of that type 
                 if (this.calcIcons[i] === this.opIconArr[j]) {
-                    let btn = new Operator(this.calcIcons[i]);
+                    let btn = new Operator(this.calcIcons[i], this.operate);
                     btn.addButton();
 
                     //append that to the row and push it to the calcButtons array
@@ -66,25 +93,6 @@ class Calculator {
         }
         //append the row to  the body
         body.appendChild(row);
-    }
-
-    calledMethod(type) {
-        for (let i = 0; i < this.calcButtons.length; i++) {
-            if (this.calcButtons[i] instanceof Operator) {
-                console.log('hit');
-            }
-            else if (this.calcButtons[i] instanceof Number) {
-                console.log('num');
-            }
-        }
-    }
-
-    addNumber() {
-
-    }
-
-    doOperator() {
-
     }
 
     //updates the display with the currentNumber
@@ -99,9 +107,11 @@ class Calculator {
 class Operator {
 
     //constructor taht takes in type
-    constructor(type) {
+    constructor(type, method) {
         this.type = type;
         this.col = null;
+        this.checker = this.checker.bind(this);
+        this.operate = method;
     }
 
     //add a button
@@ -118,21 +128,26 @@ class Operator {
         col.appendChild(para);
 
         //add an eventlistneer that uses calc.calledMethod as its function when it is clicked
-        col.addEventListener('click', function () {
-            calc.calledMethod(this.type);
-        });
-
+        col.addEventListener('click',this.checker);
+    
         //this.col and col
         this.col = col;
+    }
+
+    checker(){
+        //console.log(this.type);
+        this.operate(this.type);
     }
 }
 
 class Number {
 
     //constructor taht takes in type
-    constructor(type) {
+    constructor(type, method) {
         this.type = type;
         this.col = null;
+        this.checker = this.checker.bind(this);
+        this.addNumber = method;
     }
 
     //add a button 
@@ -157,15 +172,16 @@ class Number {
         col.appendChild(para);
 
         //add an eventlistneer that uses calc.calledMethod as its function when it is clicked
-        col.addEventListener('click', function () {
-            calc.calledMethod(this.type);
-        });
+        col.addEventListener('click', this.checker);
 
         //this.col and col
         this.col = col;
+    }
+
+    checker(){
+        this.addNumber(this.type);
     }
 }
 
 var calc = new Calculator();
 calc.init();
-
