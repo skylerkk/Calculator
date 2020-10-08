@@ -38,7 +38,7 @@
 
 class Calculator {
     constructor() {
-        this.iconArray = ['AC', '+/-', '%', '/', '7', '8', '9', 'x', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='];
+        this.calcIcons = ['AC', '+/-', '%', '/', '7', '8', '9', 'x', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='];
     }
     display() {
         let body = document.getElementById('body');
@@ -48,8 +48,8 @@ class Calculator {
         let display = document.createElement('div');
         display.setAttribute('class', 'col-12 text-right border py-5');
         row.appendChild(display);
-        for (let i = 0; i < this.iconArray.length; i++) {
-            let btn = new Button(this.iconArray[i]);
+        for (let i = 0; i < this.calcIcons.length; i++) {
+            let btn = new Button(this.calcIcons[i]);
             row.appendChild(btn.addButton());
         }
         body.appendChild(row);
