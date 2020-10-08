@@ -50,8 +50,7 @@ class Calculator {
         row.appendChild(display);
         for (let i = 0; i < this.iconArray.length; i++) {
             let btn = new Button(this.iconArray[i]);
-            btn.addButton();
-            row.appendChild(btn.column);
+            row.appendChild(btn.addButton());
         }
         body.appendChild(row);
     }
@@ -60,7 +59,6 @@ class Calculator {
 class Button {
     constructor(type) {
         this.type = type;
-        this.column = null;
     }
     addButton() {
         let col = document.createElement('div');
@@ -74,11 +72,11 @@ class Button {
         let para = document.createElement('p');
         para.innerHTML = this.type;
         col.appendChild(para);
-        col.addEventListener('click', this.end);
-        this.column = col;
+        col.addEventListener('click', this.checker.bind(this));
+        return col;
     }
 
-    end(){
+    checker(){
         console.log(`press ${this.type}`);
     }
 }
@@ -95,5 +93,5 @@ class Number extends Button {
     }
 }
 
-var c = new Calculator();
-c.display();
+var calc = new Calculator();
+calc.display();
