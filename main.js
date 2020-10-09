@@ -12,35 +12,236 @@ class Calculator {
         this.opIconArr = ['+', '-', '=', '/', '%', '+/-', 'x', 'AC'];
         this.calcButtons = [];
         this.displayText = null;
-        this.lastNumber = '';
+        this.lastNumber = '0';
         this.currentNumber = '0';
         this.lastOperator = null;
         this.dot = false;
+        this.remainder = '0';
+        this.holdNumber = '0';
+        this.equaled = false;
 
         this.addNum = this.addNum.bind(this);
         this.operate = this.operate.bind(this);
     }
 
-    addNum(num){
-        if (this.currentNumber === '0' && num !== '.'){
+    addNum(num) {
+        if (this.currentNumber === '0' && num !== '.') {
             this.currentNumber = num;
             this.update();
         }
-        else if(num === '.'){
-            if(this.dot === false){
+        else if (num === '.') {
+            if (this.dot === false) {
                 this.currentNumber += num;
                 this.update();
                 this.dot = true;
             }
         }
-        else if(this.currentNumber.length < 9){
+        else if (this.currentNumber.length < 9) {
             this.currentNumber += num;
             this.update();
         }
     }
 
-    operate(num){
-        console.log('hit');
+    operate(num) {
+        if (num === '+') {
+            this.add(num);
+        } else if (num === '-') {
+            this.subtract(num);
+        } else if (num === '/') {
+            this.divide(num);
+        } else if (num === 'x') {
+            this.multiply(num);
+        } else if (num === 'AC') {
+            this.lastNumber = '';
+            this.currentNumber = '0';
+            this.lastOperator = null;
+            this.equaled = false;
+            this.dot = false;
+            this.update();
+            // if (this.currentNumber === '') {
+            //     this.lastNumber = '0';
+            //     this.dot = false;
+            //     this.lastOperator = null;
+            // }
+            // this.currentNumber = '0';
+            // this.update();
+            // this.currentNumber = '';
+        } else if (num === '+/-') {
+            if (this.currentNumber[0] !== '-') {
+                this.currentNumber = '-' + this.currentNumber;
+                this.update();
+            }
+            else {
+                this.currentNumber = this.currentNumber.replace('-', '');
+                this.update();
+            }
+        } else if (num === '%') {
+            this.currentNumber = (parseFloat(this.currentNumber) * .01).toString();
+            this.update();
+        } else if (num === '=') {
+            if (this.lastOperator !== null) {
+                if (this.lastOperator === '+') {
+                    this.add(this.lastOperator);
+                }
+                else if (this.lastOperator === '-') {
+                    this.subtract(this.lastOperator);
+                }
+                else if (this.lastOperator === '/') {
+                    this.divide(this.lastOperator);
+                }
+                else if (this.lastOperator === 'x') {
+                    this.multiply(this.lastOperator);
+                }
+                this.equaled = true;
+            }
+            else {
+                this.update();
+            }
+        }
+    }
+
+    add(num) {
+        if (this.equaled === true) {
+            this.currentNumber = '0';
+            this.update();
+            this.lastOperator = num;
+            this.equaled = false;
+        }
+        else if (this.lastOperator !== null && this.lastOperator === num) {
+            if (this.currentNumber === '0') {
+                this.holdNumber = this.currentNumber;
+                this.currentNumber = (parseFloat(this.holdNumber) + parseFloat(this.lastNumber)).toString();
+                this.lastOperator = num;
+                this.update();
+                this.lastNumber = this.currentNumber;
+                this.holdNumber = this.currentNumber;
+                this.currentNumber = '0';
+            }
+            else {
+                this.currentNumber = (parseFloat(this.currentNumber) + parseFloat(this.lastNumber)).toString();
+                this.lastOperator = num;
+                this.update();
+                this.holdNumber = this.currentNumber;
+                this.currentNumber = '0';
+            }
+        } else {
+            this.lastNumber = this.currentNumber;
+            this.currentNumber = '0';
+            this.lastOperator = num;
+            this.update();
+        }
+        if (Number.isInteger((parseFloat(this.holdNumber)))) {
+            this.dot = false;
+        }
+    }
+
+    multiply(num) {
+        if (this.equaled === true) {
+            this.currentNumber = '0';
+            this.update();
+            this.lastOperator = num;
+            this.equaled = false;
+        }
+        else if (this.lastOperator !== null && this.lastOperator === num) {
+            if (this.currentNumber === '0') {
+                this.currentNumber = (parseFloat(this.holdNumber) * parseFloat(this.lastNumber)).toString();
+                this.lastOperator = num;
+                this.update();
+                this.lastNumber = this.currentNumber;
+                this.holdNumber = this.currentNumber;
+            }
+            else {
+                this.currentNumber = (parseFloat(this.currentNumber) * parseFloat(this.lastNumber)).toString();
+                this.lastOperator = num;
+                this.update();
+                if (this.currentNumber === '0') {
+                    this.lastNumber = this.currentNumber;
+                    this.holdNumber = this.currentNumber;
+                }
+                this.currentNumber = '0';
+            }
+        }
+        else {
+            this.lastNumber = this.currentNumber;
+            this.currentNumber = '0';
+            this.lastOperator = num;
+            this.update();
+        }
+        if (Number.isInteger((parseFloat(this.holdNumber)))) {
+            this.dot = false;
+        }
+    }
+
+    divide(num) {
+        if (this.equaled === true) {
+            this.currentNumber = '0';
+            this.update();
+            this.lastOperator = num;
+            this.equaled = false;
+        }
+        else if (this.lastOperator !== null && this.lastOperator === num) {
+            if (this.currentNumber === '0') {
+                this.remainder = (parseFloat(this.lastNumber) % parseFloat(this.holdNumber)).toString()
+                this.currentNumber = (parseFloat(this.lastNumber) / parseFloat(this.holdNumber)).toString();
+                this.lastOperator = num;
+                this.update();
+                this.lastNumber = this.currentNumber;
+                this.holdNumber = this.currentNumber;
+                this.currentNumber = '0';
+            }
+            else {
+                this.remainder = (parseFloat(this.lastNumber) % parseFloat(this.currentNumber)).toString()
+                this.currentNumber = (parseFloat(this.lastNumber) / parseFloat(this.currentNumber)).toString();
+                this.lastOperator = num;
+                this.update();
+                this.lastNumber = this.currentNumber;
+                this.holdNumber = this.currentNumber;
+                this.currentNumber = '0';
+            }
+        } else {
+            this.lastNumber = this.currentNumber;
+            this.currentNumber = '0';
+            this.lastOperator = num;
+            this.update();
+        }
+        if (Number.isInteger((parseFloat(this.holdNumber)))) {
+            this.dot = false;
+        }
+    }
+
+    subtract(num) {
+        if (this.equaled === true){
+            this.currentNumber = '0';
+            this.update();
+            this.lastOperator = num;
+            this.equaled = false;
+        }
+        else if (this.lastOperator !== null && this.lastOperator === num) {
+            if (this.currentNumber === '0') {
+                this.currentNumber = (parseFloat(this.lastNumber) - parseFloat(this.holdNumber)).toString();
+                this.lastOperator = num;
+                this.update();
+                this.lastNumber = this.currentNumber;
+                this.holdNumber = this.currentNumber;
+                this.currentNumber = '0';
+            }
+            else {
+                this.currentNumber = (parseFloat(this.lastNumber) - parseFloat(this.currentNumber)).toString();
+                this.lastOperator = num;
+                this.update();
+                this.lastNumber = this.currentNumber;
+                this.holdNumber = this.currentNumber;
+                this.currentNumber = '0';
+            }
+        } else {
+            this.lastNumber = this.currentNumber;
+            this.currentNumber = '0';
+            this.lastOperator = num;
+            this.update();
+        }
+        if (Number.isInteger((parseFloat(this.holdNumber)))) {
+            this.dot = false;
+        }
     }
 
 
@@ -69,7 +270,7 @@ class Calculator {
             for (let j = 0; j < this.numIconArr.length; j++) {
                 //if the calcIcon is equal to the numIconArr at current index then make a number button of that type 
                 if (this.calcIcons[i] === this.numIconArr[j]) {
-                    let btn = new Number(this.calcIcons[i], this.addNum);
+                    let btn = new Numbers(this.calcIcons[i], this.addNum);
                     btn.addButton();
 
                     //append that to the row and push it to the calcButtons array
@@ -128,19 +329,19 @@ class Operator {
         col.appendChild(para);
 
         //add an eventlistneer that uses calc.calledMethod as its function when it is clicked
-        col.addEventListener('click',this.checker);
-    
+        col.addEventListener('click', this.checker);
+
         //this.col and col
         this.col = col;
     }
 
-    checker(){
+    checker() {
         //console.log(this.type);
         this.operate(this.type);
     }
 }
 
-class Number {
+class Numbers {
 
     //constructor taht takes in type
     constructor(type, method) {
@@ -163,7 +364,7 @@ class Number {
             col.setAttribute('class', 'col-3 text-center border py-3');
         }
         col.setAttribute('id', this.type);
-        
+
         //make a paragraph and set its text to the calculator icon
         let para = document.createElement('p');
         para.innerHTML = this.type;
@@ -178,7 +379,7 @@ class Number {
         this.col = col;
     }
 
-    checker(){
+    checker() {
         this.addNumber(this.type);
     }
 }
